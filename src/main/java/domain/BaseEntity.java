@@ -1,7 +1,7 @@
 package domain;
 
 public abstract class BaseEntity {
-    public Long id;
+    private Long id;
 
     public BaseEntity(Long id)
     {
