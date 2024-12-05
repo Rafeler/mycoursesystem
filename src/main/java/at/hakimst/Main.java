@@ -1,5 +1,6 @@
 package at.hakimst;
 
+import dataaccess.MySqlCourseRepository;
 import dataaccess.MysqlDatabaseConnection;
 import ui.Cli;
 
@@ -9,19 +10,14 @@ import java.sql.SQLException;
 public class Main {
     public static void main(String[] args) {
 
-        Cli myCli = new Cli();
-        myCli.start();
-
+        Cli myCli = null;
         try {
-            Connection myConnection =
-                    MysqlDatabaseConnection.getConnection("jdbc:mysql:// localhost:3306/kurssystem", "root", "");
-            System.out.println("Verbindung aufgebaut");
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            myCli = new Cli(new MySqlCourseRepository());
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println("Datenbanktreiber nicht gefunden" + e.getMessage() + " SQL STATE: " + e.getSQLState());
+        } catch (ClassNotFoundException e) {
+            System.out.println("Datenbanktreiber nicht gefunden" + e.getMessage());
         }
-
-
+        myCli.start();
     }
 }
