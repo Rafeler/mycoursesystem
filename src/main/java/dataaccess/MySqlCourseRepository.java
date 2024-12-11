@@ -51,7 +51,33 @@ public class MySqlCourseRepository implements MyCourseRepository {
 
     @Override
     public Optional<Course> insert(Course entity) {
-        return Optional.empty();
+        Assert.notNull(entity);
+
+        try{
+           String sql= "INSERT INTO `courses` (name, description, hours, begin_date, end_date, coursetype) VALUES (?,?,?,?,?,?)";
+           PreparedStatement preparedStatement = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+           preparedStatement.setString(1, entity.getName());
+            preparedStatement.setString(1, entity.getDescription());
+            preparedStatement.setInt(1, entity.getHours());
+            preparedStatement.setDate(1, entity.getBegindate());
+            preparedStatement.setDate(1, entity.getEnddate());
+            preparedStatement.setString(1, entity.getCourseType().toString());
+
+            int affactedrows = preparedStatement.executeUpdate();
+
+            if(affactedrows == 0){
+                return Optional.empty();
+            }
+
+            ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+            if(generatedKeys.next()){
+                return this.getById(generatedKeys.getLong(1));
+            }else {
+                return Optional.empty();
+            }
+        }catch (SQLException sqlException){
+            throw new DatabaseException(sqlException.getMessage());
+        }
     }
 
     @Override
