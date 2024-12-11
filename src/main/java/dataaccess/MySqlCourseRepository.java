@@ -79,12 +79,11 @@ public class MySqlCourseRepository implements MyCourseRepository {
                         CourseType.valueOf(resultSet.getString("coursetype"))
                 )
                 );
-                return courseList;
             }
+            return courseList;
         } catch (SQLException e) {
             throw new DatabaseException("Database error occured");
         }
-        return List.of();
     }
 
     @Override
