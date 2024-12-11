@@ -38,6 +38,9 @@ public class Cli {
                 case "3":
                     showCoursDetails();
                     break;
+                case "4":
+                    updateCoursDetails();
+                    break;
                 case "x":
                     System.out.println("Auf Wiedersehen!");
                     break;
@@ -47,6 +50,59 @@ public class Cli {
             }
         }
         scanner.close();
+    }
+
+    private void updateCoursDetails() {
+        System.out.println("Für welche Kurs-ID möchten Sie die Kursdetails ändern?");
+        Long courseId = Long.parseLong(scanner.nextLine());
+
+        try{
+            Optional<Course> courseOptional = repo.getById(courseId);
+            if(courseOptional.isEmpty()){
+                System.out.println("Kurs mit der gegebenen ID nicht in der Datenbank!");
+            } else {
+                Course course = courseOptional.get();
+
+                System.out.println("Änderungen für folgenden Kurs: ");
+                System.out.println(course);
+
+                String name, description, hours, dateFrom, dateTo, courseType;
+
+                System.out.println("Bitte neue Kursdaten angeben (Enter falls keine Änderung gewünscht ist): ");
+                System.out.println("Name");
+                name = scanner.nextLine();
+                System.out.println("Beschreibung");
+                description = scanner.nextLine();
+                System.out.println("Stundenanzahl");
+                hours = scanner.nextLine();
+                System.out.println("Startdatum  (YYYY-MM-DD): ");
+                dateFrom = scanner.nextLine();
+                System.out.println("Enddatum  (YYYY-MM-DD): ");
+                dateTo = scanner.nextLine();
+                System.out.println("Kurstyp (ZA/BF/FF/OE): ");
+                courseType = scanner.nextLine();
+
+                Optional<Course> optionalCourseUpdated = repo.update(
+                        new Course(
+                                course.getId(),
+                                name.equals("") ? course.getName(): name,
+                                description.equals("") ? course.getDescription() : description,
+                                hours.equals("") ? course.getHours():Integer.parseInt(hours),
+                                dateFrom.equals("") ? course.getBegindate():Date.valueOf(dateFrom),
+                                dateTo.equals("") ? course.getEnddate():Date.valueOf(dateTo),
+                                courseType.equals("") ? course.getCourseType():CourseType.valueOf(courseType)
+                        )
+                );
+
+                optionalCourseUpdated.ifPresentOrElse(
+                        (c)-> System.out.println("Kurs aktualisiert: " + c),
+                        ()-> System.out.println("Kurskonnte nicht aktualisiert werden!")
+                );
+
+            }
+        } catch (Exception exception){
+            System.out.println("Unbekannter Fehler bei Kursupdate: " + exception.getMessage());
+        }
     }
 
     private void addCourse() {
@@ -136,6 +192,7 @@ public class Cli {
     {
         System.out.println("----------- KURSMANAGEMENT -----------");
         System.out.println("(1) Kurs ausgeben \t (2) Alle Kurse anzeigen \t" + "(3) Kursdetails anzeigen \t");
+        System.out.println("(4) Kursdetails ändern \t (-) xxx \t (-) xxxx");
         System.out.println("(x) ENDE");
     }
     private void inputError(){
