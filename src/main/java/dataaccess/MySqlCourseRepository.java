@@ -14,9 +14,19 @@ public class MySqlCourseRepository implements MyCourseRepository {
 
     private Connection con;
 
+    // Standard-Konstruktor
     public MySqlCourseRepository() throws SQLException, ClassNotFoundException {
+        // Eine Instanz von MysqlDatabaseConnection erstellen
+        MysqlDatabaseConnection mysqlDatabaseConnection = new MysqlDatabaseConnection();
 
-        this.con = MysqlDatabaseConnection.getConnection("jdbc:mysql:// localhost:3306/kurssystem", "root", "");
+        // Verbindung aus der Instanz holen
+        this.con = mysqlDatabaseConnection.getConnection();
+    }
+
+    // Alternativer Konstruktor, der eine MysqlDatabaseConnection akzeptiert
+    public MySqlCourseRepository(MysqlDatabaseConnection mysqlDatabaseConnection) throws SQLException {
+        // Verbindung von der übergebenen Instanz holen
+        this.con = mysqlDatabaseConnection.getConnection();
     }
 
     @Override
@@ -42,14 +52,14 @@ public class MySqlCourseRepository implements MyCourseRepository {
             while (resultSet.next())
             {
                 courseList.add(new Course(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getInt("hours"),
-                        resultSet.getDate("begindate"),
-                        resultSet.getDate("enddate"),
-                        CourseType.valueOf(resultSet.getString("coursetype"))
-                )
+                                resultSet.getLong("id"),
+                                resultSet.getString("name"),
+                                resultSet.getString("description"),
+                                resultSet.getInt("hours"),
+                                resultSet.getDate("begindate"),
+                                resultSet.getDate("enddate"),
+                                CourseType.valueOf(resultSet.getString("coursetype"))
+                        )
                 );
             }
             return courseList;
@@ -100,14 +110,14 @@ public class MySqlCourseRepository implements MyCourseRepository {
         Assert.notNull(entity);
 
         try{
-           String sql= "INSERT INTO `courses` (name, description, hours, begin_date, end_date, coursetype) VALUES (?,?,?,?,?,?)";
-           PreparedStatement preparedStatement = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-           preparedStatement.setString(1, entity.getName());
-            preparedStatement.setString(1, entity.getDescription());
-            preparedStatement.setInt(1, entity.getHours());
-            preparedStatement.setDate(1, entity.getBegindate());
-            preparedStatement.setDate(1, entity.getEnddate());
-            preparedStatement.setString(1, entity.getCourseType().toString());
+            String sql= "INSERT INTO `courses` (name, description, hours, begin_date, end_date, coursetype) VALUES (?,?,?,?,?,?)";
+            PreparedStatement preparedStatement = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setString(1, entity.getName());
+            preparedStatement.setString(2, entity.getDescription());
+            preparedStatement.setInt(3, entity.getHours());
+            preparedStatement.setDate(4, entity.getBegindate());
+            preparedStatement.setDate(5, entity.getEnddate());
+            preparedStatement.setString(6, entity.getCourseType().toString());
 
             int affactedrows = preparedStatement.executeUpdate();
 
@@ -179,14 +189,14 @@ public class MySqlCourseRepository implements MyCourseRepository {
             ArrayList<Course> courseList = new ArrayList<>();
             while (resultSet.next()) {
                 courseList.add( new Course(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getInt("hours"),
-                        resultSet.getDate("begindate"),
-                        resultSet.getDate("enddate"),
-                        CourseType.valueOf(resultSet.getString("coursetype"))
-                )
+                                resultSet.getLong("id"),
+                                resultSet.getString("name"),
+                                resultSet.getString("description"),
+                                resultSet.getInt("hours"),
+                                resultSet.getDate("begindate"),
+                                resultSet.getDate("enddate"),
+                                CourseType.valueOf(resultSet.getString("coursetype"))
+                        )
                 );
             }
             return courseList;
@@ -225,6 +235,11 @@ public class MySqlCourseRepository implements MyCourseRepository {
                 throw new DatabaseException(sqlException.getMessage());
             }
         }
+    }
+
+    @Override
+    public void deleteById(Long id) {
+
     }
 
     @Override

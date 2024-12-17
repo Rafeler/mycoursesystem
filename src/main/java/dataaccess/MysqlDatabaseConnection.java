@@ -5,19 +5,22 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class MysqlDatabaseConnection {
-    private static Connection con = null;
 
-    private MysqlDatabaseConnection() {
+    private Connection connection;
 
+    public MysqlDatabaseConnection() throws SQLException, ClassNotFoundException {
+        // JDBC-Treiber laden
+        Class.forName("com.mysql.cj.jdbc.Driver");
+
+        // Verbindung zur Datenbank aufbauen
+        String url = "jdbc:mysql://localhost:3306/deineDatenbank"; // Passe den URL an deine Datenbank an
+        String username = "deinUsername";
+        String password = "deinPasswort";
+
+        this.connection = DriverManager.getConnection(url, username, password);
     }
-    public static Connection getConnection(String url, String user, String pwd) throws ClassNotFoundException, SQLException {
-        if (con != null) {
-            return con;
-        } else {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            con = DriverManager.getConnection(url, user, pwd);
-            return con;
-        }
-    }
 
+    public Connection getConnection() {
+        return connection;
+    }
 }

@@ -7,7 +7,7 @@ import java.awt.print.Pageable;
 import java.util.Date;
 import java.util.List;
 
-public interface MyCourseRepository  extends BaseRepository<Course, Long> {
+public interface MyCourseRepository  extends BaseRepository<Course> {
     List<Course> findAllCoursesByName(String name);
 
     List<Course> findAllCoursesByDescription(String description);
@@ -20,4 +20,5 @@ public interface MyCourseRepository  extends BaseRepository<Course, Long> {
 
     List<Course> findAllRunningCourses();
 
+    void deletebyId(Long id);
 }
